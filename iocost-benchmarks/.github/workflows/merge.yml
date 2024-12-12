@@ -1,0 +1,106 @@
+name: Merge results
+
+on:
+  # Every Monday 01:00 UTC
+  schedule:
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+    inputs:
+      mergeResultsBranch:
+        description: "Branch to download the merge-results binary artifact from"
+        required: false
+        default: main
+  push:
+    branches:
+      - main
+
+jobs:
+  run:
+    name: Merge results
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout benchmarks repository
+        uses: actions/checkout@v4
+
+      - name: Download merge-results binary
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          repo: ${{ format('{0}-ci', github.repository) }}
+          workflow: ci.yml
+          branch: ${{ github.event.inputs.mergeResultsBranch }}
+
+      - name: Set merge-results binary permissions
+        run: |
+          chmod +x iocost-benchmarks-ci/target/release/merge-results
+
+      - name: Download resctl-demo binary
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          repo: ${{ format('{0}-ci', github.repository) }}
+          workflow: build-resctl-demo.yml
+          branch: main
+
+      - name: Set resctl-demo permissions
+        run: |
+          chmod +x resctl-demo-v*/*
+
+      - name: Smoketest resctl-demo
+        run: |
+          resctl-demo-v2.1/resctl-bench --version
+          resctl-demo-v2.2/resctl-bench --version
+
+      - name: Install PDF formatting dependencies
+        run: |
+          mkdir -p ~/.fonts/adobe-fonts
+          git clone https://github.com/adobe-fonts/source-code-pro.git ~/.fonts/adobe-fonts/source-code-pro
+          fc-cache -f -v ~/.fonts/adobe-fonts/source-code-pro
+          sudo apt update
+          sudo apt install --yes inkscape ghostscript
+          sudo sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
+
+      - name: Run merge-results
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: iocost-benchmarks-ci/target/release/merge-results
+
+      - name: Upload PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDFs
+          if-no-files-found: error
+          path: |
+            pdfs
+
+      - name: Upload merged results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Merged results
+          if-no-files-found: error
+          path: |
+            merged-results
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hwdb input files
+          if-no-files-found: error
+          path: |
+            hwdb-inputs
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Final hwdb file
+          if-no-files-found: error
+          path: |
+            90-iocost-tune.hwdb
+
+  # Keep workflow alive
+  # See https://docs.github.com/en/actions/learn-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1.2.1
