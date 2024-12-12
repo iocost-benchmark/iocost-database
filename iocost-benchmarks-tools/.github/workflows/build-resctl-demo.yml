@@ -1,0 +1,56 @@
+name: Build resctl-demo
+
+on:
+  # Every Monday 01:00 UTC
+  schedule:
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build resctl-demo
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version:
+          - { minor: "v2.1", ref: "v2.1.3" }
+          - { minor: "v2.2", ref: "main" }
+    steps:
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.79.0
+          override: true
+
+      - name: Checkout resctl-demo repository
+        uses: actions/checkout@v4
+        with:
+          repository: "facebookexperimental/resctl-demo"
+          path: ${{ format('resctl-demo-{0}', matrix.version.minor) }}
+          ref: ${{ matrix.version.ref }}
+
+      - name: Build resctl-demo
+        run: ${{ format('cd ${{GITHUB_WORKSPACE}}/resctl-demo-{0} && cargo build --release', matrix.version.minor) }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ format('resctl-demo-{0}', matrix.version.minor) }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ format('resctl-demo-{0}/target/release/rd-agent', matrix.version.minor) }}
+            ${{ format('resctl-demo-{0}/target/release/rd-hashd', matrix.version.minor) }}
+            ${{ format('resctl-demo-{0}/target/release/resctl-demo', matrix.version.minor) }}
+            ${{ format('resctl-demo-{0}/target/release/resctl-bench', matrix.version.minor) }}
+
+  # Keep workflow alive
+  # See https://docs.github.com/en/actions/learn-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1.2.1
