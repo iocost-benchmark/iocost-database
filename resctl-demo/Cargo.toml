@@ -1,0 +1,2 @@
+[workspace]
+members = ["rd-hashd", "rd-agent", "resctl-demo", "resctl-bench"]

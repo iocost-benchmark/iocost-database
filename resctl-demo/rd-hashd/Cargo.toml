@@ -1,0 +1,33 @@
+# Copyright (c) Facebook, Inc. and its affiliates
+[package]
+name = "rd-hashd"
+version = "2.2.5"
+authors = ["Tejun Heo <tj@kernel.org>"]
+edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/facebookexperimental/resctl-demo"
+description = "Latency-sensitive pseudo workload for resctl-demo"
+readme = "README.md"
+
+[dependencies]
+rd-util = { path = "../rd-util", version = "2.2.5" }
+rd-hashd-intf = { path = "../rd-hashd-intf", version = "2.2.5" }
+
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+console = "0.15"
+crossbeam = "0.8"
+env_logger = "0.11"
+glob = "0.3"
+indicatif = "0.17"
+lazy_static = "1.4"
+libc = "0.2"
+linreg = "0.2"
+log = "0.4"
+num = "0.4"
+pid = "3.0"
+quantiles = "0.7"
+rand = { version = "0.8", features = ["small_rng"] }
+rand_distr = "0.4"
+scan_fmt = "0.2"
+sha1_smol = "1.0"

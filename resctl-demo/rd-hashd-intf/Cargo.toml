@@ -1,0 +1,21 @@
+# Copyright (c) Facebook, Inc. and its affiliates
+[package]
+name = "rd-hashd-intf"
+version = "2.2.5"
+authors = ["Tejun Heo <tj@kernel.org>"]
+edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/facebookexperimental/resctl-demo"
+description = "Latency-sensitive pseudo workload for resctl-demo (interface library)"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rd-util = { path = "../rd-util", version = "2.2.5" }
+
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+clap = "2.33"
+lazy_static = "1.4"
+serde = { version = "1.0", features = ["derive"] }
