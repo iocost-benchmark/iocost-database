@@ -1,0 +1,32 @@
+# Copyright (c) Facebook, Inc. and its affiliates
+[package]
+name = "resctl-demo"
+version = "2.2.5"
+authors = ["Tejun Heo <tj@kernel.org>"]
+edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/facebookexperimental/resctl-demo"
+description = "A guided tour of Linux resource control with live demos"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rd-util = { path = "../rd-util", version = "2.2.5" }
+rd-hashd-intf = { path = "../rd-hashd-intf", version = "2.2.5" }
+rd-agent-intf = { path = "../rd-agent-intf", version = "2.2.5" }
+
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+clap = "2.33"
+crossbeam = "0.8"
+cursive = { version = "^0", default-features = false, features = ["termion"] }
+cursive_buffered_backend = "^0"
+cursive-tabs = "^0"
+enum-iterator = "0.7"
+env_logger = "0.11"
+lazy_static = "1.4"
+libc = "0.2"
+log = "0.4"
+tempfile = "3.3"
+term_size = "0.3"

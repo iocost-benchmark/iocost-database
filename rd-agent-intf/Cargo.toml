@@ -1,0 +1,25 @@
+# Copyright (c) Facebook, Inc. and its affiliates
+[package]
+name = "rd-agent-intf"
+version = "2.2.5"
+authors = ["Tejun Heo <tj@kernel.org>"]
+edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/facebookexperimental/resctl-demo"
+description = "Management agent for resctl-demo (interface library)"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rd-util = { path = "../rd-util", version = "2.2.5" }
+rd-hashd-intf = { path = "../rd-hashd-intf", version = "2.2.5" }
+
+anyhow = "1.0"
+clap = "2.33"
+chrono = { version = "0.4", features = ["serde"] }
+enum-iterator = "0.7"
+lazy_static = "1.4"
+libc = "0.2"
+log = "0.4"
+serde = { version = "1.0", features = ["derive"] }
